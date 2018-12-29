@@ -19,6 +19,10 @@ app.get('/', (req, res) => {
     res.header("Access-Control-Allow-Origin", "*");
     res.send('hello world')
 })
+app.get('/movie', (req, res)=> {
+    res.redirect('http://35.221.210.237:8000/')
+})
+
 app.get('/jsLogin', async (req, res) => {
     let result
     //if too many request
