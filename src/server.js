@@ -10,8 +10,8 @@ process.argv.forEach((val, index, array) => {
 
 app = express()
 
-jsObject = {}
-lastTimeLogin = 0
+global.jsObject = {}
+global.lastTimeLogin = 0
 const username = 'fbadoctor@gmail.com'
 const password = 'Avengers@2018'
 
@@ -31,10 +31,10 @@ app.get('/jsLogin', async (req, res) => {
     res.json(result)
 })
 app.get('/jsAuth', async (req, res) => {
-    let tokenValid = await checkUser()
+    // let tokenValid = await checkUser()
+
     let result
-    console.log('fuck')
-    if (!tokenValid) {
+    if (typeof jsObject.daily_token ==='undefined' || jsObject.daily_token.length === 0) {
         console.log('token not valid')
         result =  await loginJS(username, password)
 
@@ -45,32 +45,37 @@ app.get('/jsAuth', async (req, res) => {
     console.log('auth')
     res.json(result)
 })
-
+app.get('/jsCheckToken', async (req, res) => {
+    res.json(await checkUser())
+})
 const checkUser = async () => {
     try {
-        const result = await fetch('https://junglescoutpro.herokuapp.com/api/v1/users/authenticate', {
+        console.log('check token' + jsObject.daily_token)
+        const result = await fetch('https://junglescoutpro.herokuapp.com/api/v1/users/authenticate?username='+username, {
             method: 'GET',
+            credentials: 'include',
             header: {
-                Authorization: `Bearer ${jsObject.daily_token}`
-            }
+                Authorization: `${jsObject.daily_token}`
+            },
         })
         const json = await result.json()
+        console.log(json)
         if (json && typeof json.code != "undefined" && json.code == -1) {
             return false
         } else if (json && !json.status) {
-
             return false
         } else {
             return true
         }
     } catch (e) {
+        console.log(e.message)
         return false
     }
 }
 
 const loginJS = async (username, password) => {
     //if too many request
-    if (Date.now() - lastTimeLogin < 3000) {
+    if (Date.now() - lastTimeLogin < 4000) {
         return jsObject
     }
     const formData = new FormData()
@@ -88,7 +93,7 @@ const loginJS = async (username, password) => {
             }
         })
         lastTimeLogin = Date.now()
-        jsObject = result.json()
+        jsObject = await result.json()
         return jsObject
     } catch (e) {
     }
