@@ -1,6 +1,5 @@
 var express = require('express')
 var fetch = require('node-fetch')
-var axios = require('axios')
 const FormData = require('form-data')
 // check Host parameter
 let HOST = 3000
@@ -27,7 +26,15 @@ app.get('/jsLogin', async (req, res) => {
     let result
     result = await loginJS(username, password)
 
-    res.header("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader(
+        "Access-Control-Allow-Headers",
+        "Origin, X-Requested-With, Content-Type, Accept"
+    );
+    res.setHeader(
+        "Access-Control-Allow-Methods",
+        "GET, POST, PATCH, DELETE, OPTIONS"
+    );
     res.json(result)
 })
 app.get('/jsAuth', async (req, res) => {
@@ -41,7 +48,15 @@ app.get('/jsAuth', async (req, res) => {
     } else {
         result = jsObject
     }
-    res.header("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader(
+        "Access-Control-Allow-Headers",
+        "Origin, X-Requested-With, Content-Type, Accept"
+    );
+    res.setHeader(
+        "Access-Control-Allow-Methods",
+        "GET, POST, PATCH, DELETE, OPTIONS"
+    );
     console.log('auth')
     res.json(result)
 })
